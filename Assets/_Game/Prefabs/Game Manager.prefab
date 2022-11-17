@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3804386255868087646}
   - component: {fileID: 4371481747912176710}
   - component: {fileID: 5887739112451778480}
+  - component: {fileID: -6866496447799583245}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -62,3 +63,19 @@ MonoBehaviour:
     Movement: {x: 0, y: 0}
     Look: {x: 0, y: 0}
     Interact: 0
+--- !u!114 &-6866496447799583245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2530865289314989620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30246f58a58dc641a369db80ef07356, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  description: '# Game Manager
+
+
+    Provides connection to Input System.'
