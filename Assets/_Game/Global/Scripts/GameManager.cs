@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
         else
         { Destroy(gameObject); return; }
 
+        DontDestroyOnLoad(gameObject);
+
         input = GetComponent<InputListener>();
         if (input == null)
         { Debug.Log(DEBUGHeader + "No Input Listender found!"); }
