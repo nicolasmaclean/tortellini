@@ -15,6 +15,7 @@ public class InputListener : MonoBehaviour
     {
         public Vector2 Movement;
         public Vector2 Look;
+        public Vector2 MouseDelta;
 
         public int Interact;
     }
@@ -55,6 +56,7 @@ public class InputListener : MonoBehaviour
         #region Vector2 Inputs
         gameplay.Movement = inputActions.Gameplay.Movement.ReadValue<Vector2>();
         gameplay.Look = inputActions.Gameplay.Look.ReadValue<Vector2>();
+        gameplay.MouseDelta = inputActions.Gameplay.MouseDelta.ReadValue<Vector2>();
         #endregion
 
         #region Buttons (Integer Inputs)
