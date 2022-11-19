@@ -4,28 +4,30 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
-    static string DEBUGHeader = "<b>[<color=blue>Player Controller</color>]</b> ";
-    GameManager gM;
-    InputListener input;
-    Rigidbody phys;
+    const string DEBUGHeader = "<b>[<color=blue>Player Controller</color>]</b> ";
 
     [Header("Core")]
     public Camera cam;
 
     [Header("Settings")]
-    [Min(0)] public float moveSpeed = 10;
-    [Min(0)] public float topSpeed = 10;
-    [Min(0)] public float stoppingSpeed = 5;
+    [SerializeField, Min(0)] float moveSpeed = 35;
+    [SerializeField, Min(0)] float topSpeed = 5;
+    [SerializeField, Min(0)] float stoppingSpeed = 50;
+    
     [Space]
-    [Range(0, 10)] public float mouseLookSensitivity = 1;
-    [Range(0, 10)] public float stickLookSensitivity = 135;
+    
+    [SerializeField, Range(0, 10)] float mouseLookSensitivity = 2;
+    [SerializeField, Range(0, 10)] float stickLookSensitivity = 5;
+    
+    GameManager gM;
+    InputListener input;
+    Rigidbody phys;
 
     Vector2 lookAngles;
 
     Vector3 startPos;
     Vector2 startRot;
 
-    // Start is called before the first frame update
     void Start()
     {
         gM = GameManager.Instance;
@@ -48,7 +50,6 @@ public class Player_Controller : MonoBehaviour
         startRot = lookAngles;
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Failsafe Respawn
@@ -62,12 +63,12 @@ public class Player_Controller : MonoBehaviour
         Grounded = CheckForGround();
 
         #region Movement
-        Vector3 move = new Vector3(input.gameplay.Movement.x, 0, input.gameplay.Movement.y) * moveSpeed * Time.deltaTime;
+        Vector3 move = new Vector3(input.gameplay.Movement.x, 0, input.gameplay.Movement.y) * (moveSpeed * Time.deltaTime);
         move = transform.rotation * move;
         if ((phys.velocity + move).magnitude <= topSpeed & input.gameplay.Movement.magnitude >= .1f)
         { phys.velocity += move; }
         else if (phys.velocity.magnitude >= stoppingSpeed * Time.deltaTime)
-        { phys.velocity -= phys.velocity.normalized * stoppingSpeed * Time.deltaTime; }
+        { phys.velocity -= phys.velocity.normalized * (stoppingSpeed * Time.deltaTime); }
         else
         { phys.velocity = Vector3.up * phys.velocity.y; }
         #endregion
@@ -83,7 +84,7 @@ public class Player_Controller : MonoBehaviour
             { Cursor.lockState = CursorLockMode.None; }
             return;
         }
-        else if (Cursor.lockState != CursorLockMode.Locked)
+        if (Cursor.lockState != CursorLockMode.Locked)
         { Cursor.lockState = CursorLockMode.Locked; }
         #endregion
 
