@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gummi.Patterns;
@@ -7,7 +8,7 @@ public class GameManager : Singleton<GameManager>
 {
     const string DEBUGHeader = "<b>[<color=green>Game Manager</color>]</b> ";
 
-    [HideInInspector] public InputListener input;
+    public InputListener input { get; private set; }
 
     protected override void Awake()
     {
