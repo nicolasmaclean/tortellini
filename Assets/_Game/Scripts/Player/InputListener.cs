@@ -20,7 +20,9 @@ public class InputListener : MonoBehaviour
         public Vector2 Movement;
         public Vector2 Look;
         public Vector2 MouseDelta;
+        
         public float Scroll;
+        public float Rotate;
 
         public InteractionType Grab;
         public InteractionType Throw;
@@ -56,6 +58,11 @@ public class InputListener : MonoBehaviour
         gameplay.Movement = inputActions.Gameplay.Movement.ReadValue<Vector2>();
         gameplay.Look = inputActions.Gameplay.Look.ReadValue<Vector2>();
         gameplay.MouseDelta = inputActions.Gameplay.MouseDelta.ReadValue<Vector2>();
+        #endregion
+        
+        #region float Inputs
+        gameplay.Scroll = inputActions.Gameplay.Scroll.ReadValue<float>();
+        gameplay.Rotate = inputActions.Gameplay.Rotate.ReadValue<float>();
         #endregion
 
         #region Buttons (Integer Inputs)

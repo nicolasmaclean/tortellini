@@ -11,16 +11,16 @@ namespace Game.Play
 
         [SerializeField]
         [Min(0)]
-        float _minBreakingForce = 100;
+        float _minBreakingForce = 1;
 
         [SerializeField]
         [Range(0, 1)]
         float _lerpSpeed = 0.1f;
-        
-        [ReadOnly]
-        Transform _hand;
 
         Rigidbody _rb;
+        
+        Transform _hand;
+        Grabber _grabber;
         
         #region MonoBehaviour
         void Awake()
@@ -44,21 +44,22 @@ namespace Game.Play
             // exit, force was not big enough
             if (collision.impulse.sqrMagnitude < _minBreakingForce * _minBreakingForce) return;
 
-            Release();
+            _grabber.Release();
         }
         #endregion
 
-        public void Grab(Transform hand)
+        public void Grab(Grabber grabber, Transform hand)
         {
             _hand = hand;
+            _grabber = grabber;
 
             _rb.useGravity = false;
         }
 
-        // public void Rotate(float force)
-        // {
-        //     
-        // }
+        public void Rotate(Vector3 force)
+        {
+            _rb.AddTorque(force);
+        }
 
         public void Release()
         {
@@ -66,7 +67,7 @@ namespace Game.Play
             
             _rb.useGravity = true;
         }
-        
+
         // Release, but also apply force along _hand.transform.forward
         public void Throw(float force=100)
         {
@@ -74,7 +75,7 @@ namespace Game.Play
             Release();
             
             // apply force
-            _rb.AddRelativeForce(dir * force);
+            _rb.AddForce(dir * force);
         }
 
         void MoveTowardsHand()

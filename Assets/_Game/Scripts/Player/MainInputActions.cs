@@ -76,7 +76,16 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""name"": ""Scroll"",
                     ""type"": ""Value"",
                     ""id"": ""b72120a2-71b1-42b6-bfa2-a15482b06193"",
-                    ""expectedControlType"": ""Analog"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Value"",
+                    ""id"": ""1c70f0ba-7927-4a1c-985c-fb12eb4c5ef9"",
+                    ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -236,6 +245,39 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""MouseDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""270a4aea-e8aa-4c58-9b01-6a17b4d40f78"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""8a97930e-33d9-41c7-912d-411cdd6ba49c"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""475c6031-39f1-40a6-838e-e54ba9d5485c"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -794,6 +836,7 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
         m_Gameplay_Grab = m_Gameplay.FindAction("Grab", throwIfNotFound: true);
         m_Gameplay_Throw = m_Gameplay.FindAction("Throw", throwIfNotFound: true);
         m_Gameplay_Scroll = m_Gameplay.FindAction("Scroll", throwIfNotFound: true);
+        m_Gameplay_Rotate = m_Gameplay.FindAction("Rotate", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -871,6 +914,7 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Grab;
     private readonly InputAction m_Gameplay_Throw;
     private readonly InputAction m_Gameplay_Scroll;
+    private readonly InputAction m_Gameplay_Rotate;
     public struct GameplayActions
     {
         private @MainInputActions m_Wrapper;
@@ -881,6 +925,7 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
         public InputAction @Grab => m_Wrapper.m_Gameplay_Grab;
         public InputAction @Throw => m_Wrapper.m_Gameplay_Throw;
         public InputAction @Scroll => m_Wrapper.m_Gameplay_Scroll;
+        public InputAction @Rotate => m_Wrapper.m_Gameplay_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -908,6 +953,9 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                 @Scroll.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnScroll;
                 @Scroll.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnScroll;
                 @Scroll.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnScroll;
+                @Rotate.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRotate;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -930,6 +978,9 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                 @Scroll.started += instance.OnScroll;
                 @Scroll.performed += instance.OnScroll;
                 @Scroll.canceled += instance.OnScroll;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
             }
         }
     }
@@ -1065,6 +1116,7 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
         void OnGrab(InputAction.CallbackContext context);
         void OnThrow(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

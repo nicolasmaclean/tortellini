@@ -331,11 +331,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50bf40d38d7c4d869712ec231ad009e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _range: 5
+  _range: 6
+  _handRange: {x: 1.5, y: 5}
+  _scrollSpeed: 25
+  _turnSpeed: 100
+  _throwForce: 500
   _camera: {fileID: 1326359705032005409}
   _hand: {fileID: 8269586522968222435}
-  _springPool: {fileID: 11400000, guid: 05722902a91707d4c900a9e6b784cfa4, type: 2}
-  _grabbedItems: []
+  _item: {fileID: 0}
 --- !u!1 &8861334694865614126
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,8 +6,19 @@ namespace Game.Play
     public class Grabber : MonoBehaviour
     {
         [SerializeField]
-        float _range = 5f;
+        float _range = 6f;
 
+        [SerializeField]
+        Vector2 _handRange = new(1.5f, 5f);
+
+        [SerializeField]
+        [Min(0)]
+        float _scrollSpeed = 25f;
+
+        [SerializeField]
+        [Min(0)]
+        float _turnSpeed = 5f;
+        
         [SerializeField]
         float _throwForce = 500f;
         
@@ -30,16 +41,24 @@ namespace Game.Play
         
         void Update()
         {
+            // try to move the hand
+            var input = GameManager.Instance.input.gameplay;
+            TryScroll(input.Scroll);
+            
             // try to throw the item
-            InteractionType @throw = GameManager.Instance.input.gameplay.Throw;
+            InteractionType @throw = input.Throw;
             if (@throw is InteractionType.Down)
             {
                 Throw();
                 return;
             }
             
+            // try to rotate the item
+            float rotation = input.Rotate;
+            TryRotate(rotation);
+            
             // try to grab an item
-            InteractionType grab = GameManager.Instance.input.gameplay.Grab;
+            InteractionType grab = input.Grab;
             if (grab is InteractionType.Up)
             {
                 Release();
@@ -78,10 +97,10 @@ namespace Game.Play
         void Grab(Grabbable item)
         {
             _item = item;
-            item.Grab(_hand);
+            item.Grab(this, _hand);
         }
 
-        void Release()
+        public void Release()
         {
             if (!_item) return;
             
@@ -89,12 +108,48 @@ namespace Game.Play
             _item = null;
         }
 
-        void Throw()
+        public void Throw()
         {
             if (!_item) return;
             
             _item.Throw(_throwForce);
             _item = null;
+        }
+
+        void TryScroll(float amount)
+        {
+            // exit, there is no item to move
+            if (!_item) return;
+
+            if (amount == 0) return;
+            
+            Scroll(amount);
+        }
+
+        void Scroll(float amount)
+        {
+            amount *= Time.deltaTime;
+
+            Vector3 nPos = _hand.localPosition;
+            nPos.z = Mathf.MoveTowards(nPos.z, nPos.z + amount, _scrollSpeed * Time.deltaTime);
+            nPos.z = Mathf.Clamp(nPos.z, _handRange.x, _handRange.y);
+            
+            _hand.localPosition = nPos;
+        }
+
+        void TryRotate(float amount)
+        {
+            if (!_item) return;
+            
+            if (amount == 0) return;
+            
+            Rotate(amount);
+        }
+
+        void Rotate(float amount)
+        {
+            float mult = amount * _turnSpeed * Time.deltaTime;
+            _item.Rotate(_camera.transform.forward * mult);
         }
         
         #if UNITY_EDITOR
@@ -103,11 +158,21 @@ namespace Game.Play
             if (_camera == null) return;
 
             var camTransform = _camera.transform;
+            var forward = camTransform.forward;
+            
             Vector3 start = camTransform.position;
-            Vector3 end = start + camTransform.forward * _range;
+            Vector3 end = start + forward * _range;
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(start, end);
 
+            end = start + forward * _handRange.y;
+            start += forward * _handRange.x;
             Gizmos.color = Color.red;
             Gizmos.DrawLine(start, end);
+            
+            Vector3 center = _hand.position;
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(center, 0.25f);
         }
         #endif
     }
