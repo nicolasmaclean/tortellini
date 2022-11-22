@@ -1,6 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+
+public enum InteractionType
+{
+    None = 0, Down = 1, Hold = 2, Up = 3,
+}
 
 public class InputListener : MonoBehaviour
 {
@@ -16,8 +20,10 @@ public class InputListener : MonoBehaviour
         public Vector2 Movement;
         public Vector2 Look;
         public Vector2 MouseDelta;
+        public float Scroll;
 
-        public int Interact;
+        public InteractionType Grab;
+        public InteractionType Throw;
     }
 
     // Assets
@@ -43,7 +49,6 @@ public class InputListener : MonoBehaviour
         inputActions.UI.Disable();
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Update inputs for Update/Late Update functions
@@ -54,8 +59,34 @@ public class InputListener : MonoBehaviour
         #endregion
 
         #region Buttons (Integer Inputs)
-        bool buttonValue = inputActions.Gameplay.Interact.ReadValue<float>() >= .5f;
-        gameplay.Interact = buttonValue ? (gameplay.Interact < 2 ? gameplay.Interact + 1 : 2) : 0;
+        bool buttonValue = inputActions.Gameplay.Grab.ReadValue<float>() >= .5f;
+        HandleButton(buttonValue, ref gameplay.Grab);
+        
+        buttonValue = inputActions.Gameplay.Throw.ReadValue<float>() >= .5f;
+        HandleButton(buttonValue, ref gameplay.Throw);
         #endregion
+    }
+
+    // cycle through button input values
+    static void HandleButton(bool value, ref InteractionType output)
+    {
+        switch (output)
+        {
+            case InteractionType.None:
+                output = value ? InteractionType.Down : InteractionType.None;
+                return;
+            
+            case InteractionType.Down:
+            case InteractionType.Hold:
+                output = value ? InteractionType.Hold : InteractionType.Up;
+                return;
+            
+            case InteractionType.Up:
+                output = value ? InteractionType.Down : InteractionType.None;
+                break;
+                
+            default:
+                throw new ArgumentOutOfRangeException(nameof(output), output, null);
+        }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using Gummi.Utility;
+﻿using Gummi;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Game.Play
 {
@@ -9,6 +7,9 @@ namespace Game.Play
     {
         [SerializeField]
         float _range = 5f;
+
+        [SerializeField]
+        float _throwForce = 500f;
         
         [SerializeField]
         Camera _camera;
@@ -16,13 +17,8 @@ namespace Game.Play
         [SerializeField]
         Transform _hand;
 
-        [SerializeField]
-        Pool _springPool;
-
-        #if UNITY_EDITOR
-        [SerializeField]
-        #endif
-        List<SpringJoint> _grabbedItems = new();
+        [SerializeField, ReadOnly]
+        Grabbable _item;
         
         #region MonoBehaviour
         #if UNITY_EDITOR
@@ -34,29 +30,35 @@ namespace Game.Play
         
         void Update()
         {
-            int interaction = GameManager.Instance.input.gameplay.Interact;
-            
-            bool released = interaction == 0;
-            bool noItemsToRelease = _grabbedItems.Count == 0;
-            if (released)
+            // try to throw the item
+            InteractionType @throw = GameManager.Instance.input.gameplay.Throw;
+            if (@throw is InteractionType.Down)
             {
-                // exit, no items to release
-                if (noItemsToRelease) return;
-
+                Throw();
+                return;
+            }
+            
+            // try to grab an item
+            InteractionType grab = GameManager.Instance.input.gameplay.Grab;
+            if (grab is InteractionType.Up)
+            {
                 Release();
                 return;
             }
             
-            // exit, grab button wasn't pressed
-            bool pressed = interaction == 1;
-            if (!pressed) return;
-            
-            TryGrab();
+            // try to grab an item
+            if (grab is InteractionType.Down)
+            {
+                TryGrab();
+            }
         }
         #endregion
 
         void TryGrab()
         {
+            // exit, still holding an item
+            if (_item) return;
+            
             // check grabbable item is in front of the user
             var camTransform = _camera.transform;
             Ray ray = new Ray(camTransform.position, camTransform.forward);
@@ -70,37 +72,29 @@ namespace Game.Play
             Grabbable item = rb.GetComponent<Grabbable>();
             if (!item) return;
             
-            Grab(rb);
+            Grab(item);
         }
 
-        void Grab(Rigidbody item)
+        void Grab(Grabbable item)
         {
-            GameObject spring = _springPool.CheckOut();
-            SpringJoint joint = spring.GetComponent<SpringJoint>();
-            _grabbedItems.Add(joint);
-            
-            spring.transform.SetParent(_hand);
-            spring.transform.localPosition = Vector3.zero;
-            spring.transform.localRotation = Quaternion.identity;
-
-            joint.connectedBody = item;
-            item.useGravity = false;
+            _item = item;
+            item.Grab(_hand);
         }
 
         void Release()
         {
-            foreach (var spring in _grabbedItems)
-            {
-                GameObject go = spring.gameObject;
-                Rigidbody item = spring.connectedBody;
-                item.useGravity = true;
-                spring.connectedBody = null;
-                
-                // ReSharper disable once PossibleInvalidOperationException
-                _springPool.CheckIn(go, moveToScene: true);
-            }
+            if (!_item) return;
             
-            _grabbedItems.Clear();
+            _item.Release();
+            _item = null;
+        }
+
+        void Throw()
+        {
+            if (!_item) return;
+            
+            _item.Throw(_throwForce);
+            _item = null;
         }
         
         #if UNITY_EDITOR

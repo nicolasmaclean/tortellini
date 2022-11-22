@@ -46,7 +46,16 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Interact"",
+                    ""name"": ""MouseDelta"",
+                    ""type"": ""Value"",
+                    ""id"": ""0683cedb-aaeb-4365-aaa3-241a9b8b81ee"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Grab"",
                     ""type"": ""Value"",
                     ""id"": ""8a834ad8-6f5a-4a3c-a8b1-f4d270163235"",
                     ""expectedControlType"": ""Button"",
@@ -55,10 +64,19 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""MouseDelta"",
+                    ""name"": ""Throw"",
                     ""type"": ""Value"",
-                    ""id"": ""0683cedb-aaeb-4365-aaa3-241a9b8b81ee"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""id"": ""1feaf51f-a0b3-40f1-ae8a-78209fc9e5ca"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Scroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""b72120a2-71b1-42b6-bfa2-a15482b06193"",
+                    ""expectedControlType"": ""Analog"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -160,7 +178,7 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
-                    ""action"": ""Interact"",
+                    ""action"": ""Grab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -171,7 +189,7 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Controller"",
-                    ""action"": ""Interact"",
+                    ""action"": ""Grab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -182,7 +200,29 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
-                    ""action"": ""Interact"",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19dcf045-208d-4d19-ae5c-7f1109e7bf34"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1623e21f-23fd-4bf8-a64f-8f7250597dc9"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -750,8 +790,10 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
         m_Gameplay_Look = m_Gameplay.FindAction("Look", throwIfNotFound: true);
-        m_Gameplay_Interact = m_Gameplay.FindAction("Interact", throwIfNotFound: true);
         m_Gameplay_MouseDelta = m_Gameplay.FindAction("MouseDelta", throwIfNotFound: true);
+        m_Gameplay_Grab = m_Gameplay.FindAction("Grab", throwIfNotFound: true);
+        m_Gameplay_Throw = m_Gameplay.FindAction("Throw", throwIfNotFound: true);
+        m_Gameplay_Scroll = m_Gameplay.FindAction("Scroll", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -825,16 +867,20 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
     private IGameplayActions m_GameplayActionsCallbackInterface;
     private readonly InputAction m_Gameplay_Movement;
     private readonly InputAction m_Gameplay_Look;
-    private readonly InputAction m_Gameplay_Interact;
     private readonly InputAction m_Gameplay_MouseDelta;
+    private readonly InputAction m_Gameplay_Grab;
+    private readonly InputAction m_Gameplay_Throw;
+    private readonly InputAction m_Gameplay_Scroll;
     public struct GameplayActions
     {
         private @MainInputActions m_Wrapper;
         public GameplayActions(@MainInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Gameplay_Movement;
         public InputAction @Look => m_Wrapper.m_Gameplay_Look;
-        public InputAction @Interact => m_Wrapper.m_Gameplay_Interact;
         public InputAction @MouseDelta => m_Wrapper.m_Gameplay_MouseDelta;
+        public InputAction @Grab => m_Wrapper.m_Gameplay_Grab;
+        public InputAction @Throw => m_Wrapper.m_Gameplay_Throw;
+        public InputAction @Scroll => m_Wrapper.m_Gameplay_Scroll;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -850,12 +896,18 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                 @Look.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook;
                 @Look.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook;
                 @Look.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook;
-                @Interact.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
-                @Interact.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
-                @Interact.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
                 @MouseDelta.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMouseDelta;
                 @MouseDelta.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMouseDelta;
                 @MouseDelta.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMouseDelta;
+                @Grab.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnGrab;
+                @Grab.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnGrab;
+                @Grab.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnGrab;
+                @Throw.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
+                @Throw.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
+                @Throw.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
+                @Scroll.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnScroll;
+                @Scroll.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnScroll;
+                @Scroll.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnScroll;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -866,12 +918,18 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
-                @Interact.started += instance.OnInteract;
-                @Interact.performed += instance.OnInteract;
-                @Interact.canceled += instance.OnInteract;
                 @MouseDelta.started += instance.OnMouseDelta;
                 @MouseDelta.performed += instance.OnMouseDelta;
                 @MouseDelta.canceled += instance.OnMouseDelta;
+                @Grab.started += instance.OnGrab;
+                @Grab.performed += instance.OnGrab;
+                @Grab.canceled += instance.OnGrab;
+                @Throw.started += instance.OnThrow;
+                @Throw.performed += instance.OnThrow;
+                @Throw.canceled += instance.OnThrow;
+                @Scroll.started += instance.OnScroll;
+                @Scroll.performed += instance.OnScroll;
+                @Scroll.canceled += instance.OnScroll;
             }
         }
     }
@@ -1003,8 +1061,10 @@ public partial class @MainInputActions : IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
-        void OnInteract(InputAction.CallbackContext context);
         void OnMouseDelta(InputAction.CallbackContext context);
+        void OnGrab(InputAction.CallbackContext context);
+        void OnThrow(InputAction.CallbackContext context);
+        void OnScroll(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

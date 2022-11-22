@@ -75,7 +75,7 @@ public class Player_Controller : MonoBehaviour
 
         #region Look Movement
         #region Mouse Lock
-        if (input.gameplay.Interact == 1)
+        if (input.gameplay.Grab is InteractionType.Down)
         { Cursor.visible = false; }
 
         if (Cursor.visible)
