@@ -29,7 +29,7 @@ namespace Game
         int wrapInt(int numToWrap)
         {
             if(numToWrap == length) return 0;
-            if (numToWrap > length) return numToWrap % length - 1;
+            if(numToWrap > length) return numToWrap % length - 1;
             return numToWrap;
         }
     }
