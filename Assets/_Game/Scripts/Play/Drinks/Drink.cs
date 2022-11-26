@@ -12,7 +12,7 @@ namespace Game
         // Start is called before the first frame update
         void Start()
         {
-        
+            setTotalPoisonValue();
         }
 
         // Update is called once per frame
@@ -21,11 +21,14 @@ namespace Game
         
         }
 
-        public int getTotalPoisonValue()
+        void setTotalPoisonValue()
         {
-            foreach(Ingredient ingredient in ingredients) {
+            foreach (Ingredient ingredient in ingredients) {
                 totalPoisonValue += ingredient.getPoisonValue();
             }
+        }
+        public int getTotalPoisonValue()
+        {
             return totalPoisonValue;
         }
 
