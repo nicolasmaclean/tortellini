@@ -8,6 +8,7 @@ namespace Game.Play
     public class DrinkRecipeSO : ScriptableObject
     {
         public string recipeName;
-        public Ingredient.IngredientType[] ingredientArray;
+        public GameObject outputDrinkPrefab;
+        public List<Ingredient.IngredientType> listOfIngredients;
     }
 }

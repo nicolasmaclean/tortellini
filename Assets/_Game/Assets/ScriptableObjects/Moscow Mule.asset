@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Moscow Mule
   m_EditorClassIdentifier: 
   recipeName: Moscow Mule
-  ingredientArray: 0000000002000000
+  outputDrinkPrefab: {fileID: 4594227888704796695, guid: 97d1c1c0ccc34cd48ada38066550663b,
+    type: 3}
+  listOfIngredients: 0000000002000000
