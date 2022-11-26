@@ -9,6 +9,7 @@ namespace Game.Play
         string _label;
 
         [SerializeField] TextMesh text;
+        Camera cam;
 
         private void Awake()
         {
@@ -20,13 +21,20 @@ namespace Game.Play
             {
                 //_label = GetComponentInParent<Drink>().
             }
+
+            cam = Camera.main;
         }
 
         private void Update()
         {
             if(_label != null)
             {
-                //if()
+                if(text.text != _label)
+                {
+                    text.text = _label;
+                }
+
+                transform.LookAt(cam.transform);
             }
         }
     }
