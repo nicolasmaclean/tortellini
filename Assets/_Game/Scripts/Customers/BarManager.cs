@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Gummi.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -7,33 +9,39 @@ namespace Game
 {
     public class BarManager: MonoBehaviour
     {
-        [SerializeField] GameObject customerPrefab;
-        [SerializeField] Seats[] allSeats;
-        [SerializeField] Seats work;
+        [SerializeField] Pool customerPool;
+        [SerializeField] Seat[] allSeats;
         int patronsInBar = 0;
 
-        private void Start()
+        IEnumerator Start()
         {
-            StartCoroutine(ImprovedUpdate());
-        }
-
-        IEnumerator ImprovedUpdate(){
-            if (patronsInBar < 5) {
-                spawnCustomer();
+            // try to maintain 5 customers in the shop at a time
+            while (true)
+            {
+                if (patronsInBar < 5)
+                {
+                    spawnCustomer();
+                }
+                
+                int randSecs = Random.Range(1, 10);
+                yield return new WaitForSeconds(randSecs);
             }
-            int randSecs = Random.Range(1, 10);
-            yield return new WaitForSeconds(randSecs);
-            StartCoroutine(ImprovedUpdate());
         }
 
         void spawnCustomer()
         {
-            patronsInBar++;
-            GameObject customer = Instantiate(customerPrefab, gameObject.GetComponent<Transform>());
-            Seats seat = getEmptySeat();
+            // find seat for customer
+            Seat seat = getEmptySeat();
             seat.occupySeat();
-            Transform trans = seat.GetComponentInParent<Transform>();
-            customer.GetComponent<CustomerController>().setTarget(trans);
+            
+            // spawn customer
+            GameObject go = customerPool.CheckOut();
+            CustomerController customer = go.GetComponent<CustomerController>();
+            
+            go.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            customer.setTarget(this, seat);
+            
+            patronsInBar++;
         }
 
         public void removePatron()
@@ -41,14 +49,6 @@ namespace Game
             patronsInBar--;
         }
 
-        Seats getEmptySeat()
-        {
-            for(int i = 0; i < allSeats.Length; i++) {
-                if(!allSeats[i].isActuallyOccupied()){
-                    return allSeats[i];
-                }
-            }
-            return null;
-        }
+        Seat getEmptySeat() => allSeats.FirstOrDefault(seat => !seat.IsOccupied);
     }
 }

@@ -9,22 +9,15 @@ namespace Game
         int totalPoisonValue = 0;
         List<Ingredient> ingredients = new List<Ingredient>();
 
-        // Start is called before the first frame update
         void Start()
         {
             setTotalPoisonValue();
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
-
         void setTotalPoisonValue()
         {
             foreach (Ingredient ingredient in ingredients) {
-                totalPoisonValue += ingredient.getPoisonValue();
+                totalPoisonValue += ingredient.PoisonValue;
             }
         }
         public int getTotalPoisonValue()
