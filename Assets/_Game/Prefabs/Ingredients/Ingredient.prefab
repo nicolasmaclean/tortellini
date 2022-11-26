@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _minBreakingForce: 100
-  _lerpSpeed: 0.1
+  _lerpSpeed: 0.75
 --- !u!1 &936823610819065050
 GameObject:
   m_ObjectHideFlags: 0

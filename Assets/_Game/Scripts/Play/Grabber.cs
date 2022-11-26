@@ -6,10 +6,7 @@ namespace Game.Play
     public class Grabber : MonoBehaviour
     {
         [SerializeField]
-        float _range = 6f;
-
-        [SerializeField]
-        Vector2 _handRange = new(1.5f, 5f);
+        Vector2 _handRange = new(1.5f, 3f);
 
         [SerializeField]
         [Min(0)]
@@ -24,6 +21,9 @@ namespace Game.Play
         
         [SerializeField]
         Camera _camera;
+
+        [HideInInspector]
+        public Player_Controller _player;
         
         [SerializeField]
         Transform _hand;
@@ -36,6 +36,7 @@ namespace Game.Play
         void OnValidate()
         {
             _camera = GetComponentInChildren<Camera>();
+            _player = GetComponent<Player_Controller>();
         }
         #endif
         
@@ -55,7 +56,7 @@ namespace Game.Play
             
             // try to rotate the item
             float rotation = input.Rotate;
-            TryRotate(rotation);
+            TryRotate(-rotation);
             
             // try to grab an item
             InteractionType grab = input.Grab;
@@ -80,8 +81,8 @@ namespace Game.Play
             
             // check grabbable item is in front of the user
             var camTransform = _camera.transform;
-            Ray ray = new Ray(camTransform.position, camTransform.forward);
-            bool canGrab = Physics.Raycast(ray, out RaycastHit hitinfo, 10);
+            Ray ray = new(camTransform.position, camTransform.forward);
+            bool canGrab = Physics.Raycast(ray, out RaycastHit hitinfo, _handRange.y + 1);
             
             if (!canGrab) return;
 
@@ -97,13 +98,17 @@ namespace Game.Play
         void Grab(Grabbable item)
         {
             _item = item;
+
+            float scrollPos = Mathf.Clamp(Vector3.Distance(item.transform.position, _camera.transform.position), _handRange.x, _handRange.y);
+            _hand.localPosition += Vector3.forward * (-_hand.localPosition.z + scrollPos);
+
             item.Grab(this, _hand);
         }
 
         public void Release()
         {
             if (!_item) return;
-            
+
             _item.Release();
             _item = null;
         }
@@ -111,7 +116,7 @@ namespace Game.Play
         public void Throw()
         {
             if (!_item) return;
-            
+
             _item.Throw(_throwForce);
             _item = null;
         }
@@ -161,7 +166,7 @@ namespace Game.Play
             var forward = camTransform.forward;
             
             Vector3 start = camTransform.position;
-            Vector3 end = start + forward * _range;
+            Vector3 end = start + forward * (_handRange.y + 1);
             Gizmos.color = Color.green;
             Gizmos.DrawLine(start, end);
 

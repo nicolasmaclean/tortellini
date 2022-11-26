@@ -16,7 +16,7 @@ public class Player_Controller : MonoBehaviour
     
     [Space]
     
-    [SerializeField, Range(0, 10)] float mouseLookSensitivity = 2;
+    [SerializeField, Range(0, 10)] float mouseLookSensitivity = 5;
     [SerializeField, Range(0, 10)] float stickLookSensitivity = 5;
     
     GameManager gM;
@@ -24,6 +24,7 @@ public class Player_Controller : MonoBehaviour
     Rigidbody phys;
 
     Vector2 lookAngles;
+    [HideInInspector] public float lookYDelta;
 
     Vector3 startPos;
     Vector2 startRot;
@@ -63,14 +64,26 @@ public class Player_Controller : MonoBehaviour
         Grounded = CheckForGround();
 
         #region Movement
+        // Get axis-aligned movement
         Vector3 move = new Vector3(input.gameplay.Movement.x, 0, input.gameplay.Movement.y) * (moveSpeed * Time.deltaTime);
+        
+        // Rotate movement to player direction
         move = transform.rotation * move;
-        if ((phys.velocity + move).magnitude <= topSpeed & input.gameplay.Movement.magnitude >= .1f)
+
+        // Move if below top speed
+        if ((GetXZVelocity() + move).magnitude <= topSpeed & input.gameplay.Movement.magnitude >= .1f)
         { phys.velocity += move; }
-        else if (phys.velocity.magnitude >= stoppingSpeed * Time.deltaTime)
-        { phys.velocity -= phys.velocity.normalized * (stoppingSpeed * Time.deltaTime); }
+        
+        // Slow down through friction
+        else if (GetXZVelocity().magnitude >= stoppingSpeed * Time.deltaTime)
+        { phys.velocity -= GetXZVelocity().normalized * (stoppingSpeed * Time.deltaTime); }
+        
+        // Stop if velocity is too slow for friction
         else
         { phys.velocity = Vector3.up * phys.velocity.y; }
+
+        if (Grounded)
+        { phys.velocity = GetXZVelocity(); }
         #endregion
 
         #region Look Movement
@@ -88,17 +101,21 @@ public class Player_Controller : MonoBehaviour
         { Cursor.lockState = CursorLockMode.Locked; }
         #endregion
 
+        lookYDelta = lookAngles.y;
+
         lookAngles.y +=
-            input.gameplay.MouseDelta.x * mouseLookSensitivity * 45 * Time.deltaTime +
+            input.gameplay.MouseDelta.x * mouseLookSensitivity * .03f +
             input.gameplay.Look.x * stickLookSensitivity * Time.deltaTime;
 
         lookAngles.x +=
-            -input.gameplay.MouseDelta.y * mouseLookSensitivity * 45 * Time.deltaTime +
+            -input.gameplay.MouseDelta.y * mouseLookSensitivity * .03f +
             -input.gameplay.Look.y * stickLookSensitivity * Time.deltaTime;
 
-        lookAngles.y %= 360; // Will keep and overflow value between 0 - 360
-        lookAngles.x = Mathf.Clamp(lookAngles.x, -89, 89); // Clamps vertical looking angle
+        lookYDelta = lookAngles.y - lookYDelta;
 
+        lookAngles.y %= 360; // Will keep and overflow value between 0 - 360
+        lookAngles.x = Mathf.Clamp(lookAngles.x, -75, 75); // Clamps vertical looking angle
+        
         cam.transform.localEulerAngles = Vector3.right * lookAngles.x;
         transform.eulerAngles = Vector3.up * lookAngles.y;
         #endregion
@@ -115,5 +132,10 @@ public class Player_Controller : MonoBehaviour
         }
 
         return false;
-    }    
+    }
+
+    public Vector3 GetXZVelocity()
+    {
+        return phys.velocity - Vector3.up * phys.velocity.y;
+    }
 }

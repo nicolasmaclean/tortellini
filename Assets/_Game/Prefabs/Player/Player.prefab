@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1326359703666158258}
   - component: {fileID: 1326359703666158256}
   - component: {fileID: 1326359703666158259}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: TEMP Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1326359703923319950}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 1326359705032005409}
   - component: {fileID: 1326359705032005408}
   - component: {fileID: 1326359705032005423}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 1326359705216450668}
   - component: {fileID: 1326359705216450671}
   - component: {fileID: 7058852976922767539}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -287,8 +287,9 @@ MonoBehaviour:
   moveSpeed: 35
   topSpeed: 5
   stoppingSpeed: 50
-  mouseLookSensitivity: 2
+  mouseLookSensitivity: 5
   stickLookSensitivity: 5
+  lookYDelta: 0
 --- !u!54 &1326359705216450668
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -332,11 +333,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _range: 6
-  _handRange: {x: 1.5, y: 5}
+  _handRange: {x: 1.5, y: 3}
   _scrollSpeed: 25
   _turnSpeed: 100
   _throwForce: 500
   _camera: {fileID: 1326359705032005409}
+  _player: {fileID: 1326359705216450669}
   _hand: {fileID: 8269586522968222435}
   _item: {fileID: 0}
 --- !u!1 &8861334694865614126
@@ -348,7 +350,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8269586522968222435}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
